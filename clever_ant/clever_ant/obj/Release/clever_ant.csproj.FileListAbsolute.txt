@@ -1,0 +1,9 @@
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\bin\Release\clever_ant.exe.config
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\bin\Release\clever_ant.exe
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\bin\Release\clever_ant.pdb
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.Form1.resources
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.Properties.Resources.resources
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.csproj.GenerateResource.Cache
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.exe
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.pdb
+D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.csprojResolveAssemblyReference.cache
