@@ -14,13 +14,11 @@ namespace clever_ant
 {
     public partial class Form1 : Form
     {
-        int MATRIX_SIZE = 30;
+        int MATRIX_SIZE = 50;
         int startX = 1, startY = 1;
         const int RANDOM_GENERATE = 15;
 
         int one_cell;
-        Graphics g = null;
-        Pen frame_line = null;
         System.Timers.Timer timer = new System.Timers.Timer(200);
         bool timerOn = false;
 
@@ -54,6 +52,7 @@ namespace clever_ant
                 return;
             }
 
+            //Выключаем таймер, если включен
             if(timerOn)
             {
                 button_timer_Click();
@@ -61,7 +60,13 @@ namespace clever_ant
 
             one_cell = main_pictureBox.Width / (MATRIX_SIZE + 2);
 
-            g.Clear(Color.White);
+            main_pictureBox.Invoke(new Action(() =>
+            {
+                using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                {
+                    g.Clear(Color.White);
+                }
+            }));
 
             pheromone = new int[MATRIX_SIZE + 2, MATRIX_SIZE + 2];
             eat = new bool[MATRIX_SIZE, MATRIX_SIZE];
@@ -79,10 +84,19 @@ namespace clever_ant
             {
                 for (int j = 0; j < MATRIX_SIZE + 2; j++)
                 {
-                    g.DrawRectangle(frame_line, one_cell * i, one_cell * j, one_cell, one_cell);
+                    main_pictureBox.Invoke(new Action(() =>
+                    {
+                        using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                        {
+                            using (var frame_line = new Pen(Color.Black, 1))
+                            {
+                                g.DrawRectangle(frame_line, one_cell * i, one_cell * j, one_cell, one_cell);
 
-                    if (i == 0 || i == MATRIX_SIZE + 2 - 1 || j == 0 || j == MATRIX_SIZE + 2 - 1)
-                        g.DrawString("-1", new Font("Arial", one_cell / 3), Brushes.Red, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
+                                if (i == 0 || i == MATRIX_SIZE + 2 - 1 || j == 0 || j == MATRIX_SIZE + 2 - 1)
+                                    g.DrawString("-1", new Font("Arial", one_cell / 3), Brushes.Red, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
+                            }
+                        }
+                    }));
 
                     setPheromone(i, j, pheromone[i, j]);
                 }
@@ -106,26 +120,7 @@ namespace clever_ant
             InitializeComponent();
 
             timer.Elapsed += Timer_Elapsed;
-
-            g = Graphics.FromHwnd(main_pictureBox.Handle);
-            frame_line = new Pen(Color.Black, 1);
-
-            /*
-            pheromone = new int[,] {
-                { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-                { -1, 1, 2, 2, 1, 1, 0, 0, 1, 2, 2, -1 },
-                { -1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 2, -1 },
-                { -1, 0, 0, 0, 0, 3, 0, 1, 0, 0, 2, -1 },
-                { -1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 2, -1 },
-                { -1, 0, 0, 0, 3, 0, 0, 1, 0, 0, 2, -1 },
-                { -1, 0, 0, 0, 0, 3, 0, 0, 1, 0, 2, -1 },
-                { -1, 0, 0, 0, 2, 4, 1, 0, 1, 0, 2, -1 },
-                { -1, 0, 0, 1, 0, 1, 5, 1, 0, 1, 2, -1 },
-                { -1, 0, 0, 1, 0, 1, 2, 6, 6, 6, 3, -1 },
-                { -1, 0, 0, 0, 2, 2, 2, 3, 3, 3, 10, -1 },
-                { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
-            };
-            // */
+            
         }
 
         private void button_nextStep_Click(object sender = null, EventArgs e = null)
@@ -146,15 +141,14 @@ namespace clever_ant
                 updateEat(ant[0], ant[1], false);
                 goHome = !goHome;
                 updateAnt(ant[0], ant[1]);
+                pheromone[ant[0], ant[1]] += 2;
             }
 
             if (!goHome)
-            {
-                pheromone[ant[0], ant[1]] += 2;    
-            }
+                pheromone[ant[0], ant[1]] += 2;
             else
-                if(pheromone[ant[0], ant[1]] > 0)
-                    pheromone[ant[0], ant[1]] -= 1;
+                if (pheromone[ant[0], ant[1]] > 0)
+                pheromone[ant[0], ant[1]] -= 1;
 
             setPheromone(ant[0], ant[1], pheromone[ant[0], ant[1]]);
 
@@ -168,45 +162,42 @@ namespace clever_ant
             if (i <= 0 || j <= 0 || i >= MATRIX_SIZE + 2 - 1 || j >= MATRIX_SIZE + 2 - 1)
                 return;
 
-            g.DrawString(val.ToString(), new Font("Arial", one_cell / 3), Brushes.Green, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
-        }//2 1
+            main_pictureBox.Invoke(new Action(() => {
+                using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                {
+                    g.DrawString(val.ToString(), new Font("Arial", one_cell / 3), Brushes.Green, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
+                }
+            }));
+        }
 
         private void updateAnt(int i, int j)
         {
             if (i <= 0 || j <= 0 || i >= MATRIX_SIZE + 2 - 1 || j >= MATRIX_SIZE + 2 - 1)
                 return;
 
-            g.FillRectangle(Brushes.White, one_cell * ant[1] + 1, one_cell * ant[0] + 1, one_cell - 1, one_cell - 1);
-            setPheromone(ant[0], ant[1], pheromone[ant[0], ant[1]]);
-            g.FillRectangle(goHome ? Brushes.RoyalBlue : Brushes.Gold, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
-            setPheromone(i, j, pheromone[i, j]);
-
             updateEat(ant[0], ant[1], eat[ant[0] - 1, ant[1] - 1]);
 
-            ant[0] = i; ant[1] = j;
-
-            /*if (goHome || !goHome)
-            {*/
-                ant_near[0, 0] = ant[0] + 1; ant_near[0, 1] = ant[1] + 1;
-                ant_near[1, 0] = ant[0] + 1; ant_near[1, 1] = ant[1];
-                ant_near[2, 0] = ant[0];     ant_near[2, 1] = ant[1] + 1;
-                ant_near[3, 0] = ant[0] + 1; ant_near[3, 1] = ant[1] - 1;
-                ant_near[4, 0] = ant[0] - 1; ant_near[4, 1] = ant[1] + 1;
-                ant_near[5, 0] = ant[0];     ant_near[5, 1] = ant[1] - 1;
-                ant_near[6, 0] = ant[0] - 1; ant_near[6, 1] = ant[1];
-                ant_near[7, 0] = ant[0] - 1; ant_near[7, 1] = ant[1] - 1;
-            /*}
-            else
+            main_pictureBox.Invoke(new Action(() =>
             {
-                ant_near[0, 0] = ant[0] - 1; ant_near[0, 1] = ant[1] - 1;
-                ant_near[1, 0] = ant[0] - 1; ant_near[1, 1] = ant[1];
-                ant_near[2, 0] = ant[0];     ant_near[2, 1] = ant[1] - 1;
-                ant_near[3, 0] = ant[0] - 1; ant_near[3, 1] = ant[1] + 1;
-                ant_near[4, 0] = ant[0] + 1; ant_near[4, 1] = ant[1] - 1;
-                ant_near[5, 0] = ant[0];     ant_near[5, 1] = ant[1] + 1;
-                ant_near[6, 0] = ant[0] + 1; ant_near[6, 1] = ant[1];
-                ant_near[7, 0] = ant[0] + 1; ant_near[7, 1] = ant[1] + 1;
-            }*/
+                using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                {
+                    g.FillRectangle(goHome ? Brushes.RoyalBlue : Brushes.Gold, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                }
+            }));
+
+            setPheromone(i, j, pheromone[i, j]);
+
+            ant[0] = i; ant[1] = j;
+            
+            
+            ant_near[0, 0] = ant[0] + 1; ant_near[0, 1] = ant[1] + 1;
+            ant_near[1, 0] = ant[0] + 1; ant_near[1, 1] = ant[1];
+            ant_near[2, 0] = ant[0];     ant_near[2, 1] = ant[1] + 1;
+            ant_near[3, 0] = ant[0] + 1; ant_near[3, 1] = ant[1] - 1;
+            ant_near[4, 0] = ant[0] - 1; ant_near[4, 1] = ant[1] + 1;
+            ant_near[5, 0] = ant[0];     ant_near[5, 1] = ant[1] - 1;
+            ant_near[6, 0] = ant[0] - 1; ant_near[6, 1] = ant[1];
+            ant_near[7, 0] = ant[0] - 1; ant_near[7, 1] = ant[1] - 1;
         }
 
         private void updateEat(int i, int j, bool val)
@@ -216,13 +207,20 @@ namespace clever_ant
 
             eat[i - 1, j - 1] = val;
 
-            //if (ant[0] == i && ant[1] == j)
-                //return;
-
-            if(val)
-                g.FillRectangle(Brushes.Crimson, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
-            else
-                g.FillRectangle(Brushes.White, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+            main_pictureBox.Invoke(new Action(() =>
+            {
+                using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                {
+                    if (val)
+                    {
+                        g.FillRectangle(Brushes.Crimson, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                    }
+                    else
+                    {
+                        g.FillRectangle(Brushes.White, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                    }
+                }
+            }));
             setPheromone(i, j, pheromone[i, j]);
         }
 
@@ -279,12 +277,15 @@ namespace clever_ant
         {
             if (!loaded || timerOn)
                 return;
-
+            
             Random random = new Random(DateTime.Now.Millisecond);
             for (int i = 1; i <= MATRIX_SIZE; i++)
             {
                 for (int j = 1; j <= MATRIX_SIZE; j++)
                 {
+                    if (i == ant[0] && j == ant[1])
+                        continue;
+
                     if (random.Next(RANDOM_GENERATE) == 0)
                         updateEat(j, i, true);
                     else
@@ -302,6 +303,7 @@ namespace clever_ant
 
             if (!timerOn)
             {
+                timer.Interval = trackBar_timerTick.Value;
                 timer.Start();
                 button_timer.Text = "timer off";
             }
@@ -321,6 +323,43 @@ namespace clever_ant
         private void button_setHome_Click(object sender, EventArgs e)
         {
             setHome = !setHome;
+        }
+
+        private void button_colorMode_Click(object sender, EventArgs e)
+        {
+            if (!loaded || timerOn)
+                return;
+
+            int max = 0;
+            for(int i = 1; i <= MATRIX_SIZE; i++)
+            {
+                for (int j = 1; j <= MATRIX_SIZE; j++)
+                {
+                    if (pheromone[i, j] > max && i != startX && j != startY)
+                        max = pheromone[i, j];
+                }
+            }
+
+            int color;
+
+            main_pictureBox.Invoke(new Action(() => {
+                using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                {
+                    for (int i = 1; i <= MATRIX_SIZE; i++)
+                    {
+                        for (int j = 1; j <= MATRIX_SIZE; j++)
+                        {
+                            if (eat[i - 1, j - 1] || (i == ant[0] && j == ant[1]))
+                                continue;
+                            g.FillRectangle(Brushes.White, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                            color = (int)Math.Floor(pheromone[i, j] / (float)(max <= 0 ? 1 : max) * 255.0);
+                            color = color > 255 ? 255 : color;
+                            g.FillRectangle(new SolidBrush(Color.FromArgb(150, 255 - color, 255 - color, 255 - color)), one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                            g.DrawString(pheromone[i, j].ToString(), new Font("Arial", one_cell / 3), Brushes.Green, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
+                        }
+                    }
+                }
+            }));
         }
 
         private void trackBar_timerTick_Scroll(object sender, EventArgs e)
@@ -348,8 +387,9 @@ namespace clever_ant
                 return;
             }
 
-            if (i == 0 || j == 0)
+            if (i == 0 || j == 0 || i > MATRIX_SIZE || j > MATRIX_SIZE)
                 return;
+            
 
             updateEat(j, i, !eat[j - 1, i - 1]);
         }
@@ -359,6 +399,5 @@ namespace clever_ant
             MessageBox.Show(str, "Error");
             return 0;
         }
-
     }
 }

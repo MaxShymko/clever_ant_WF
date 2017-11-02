@@ -37,6 +37,7 @@
             this.textBox_matrixSize = new System.Windows.Forms.TextBox();
             this.trackBar_timerTick = new System.Windows.Forms.TrackBar();
             this.button_setHome = new System.Windows.Forms.Button();
+            this.button_colorMode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.main_pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_timerTick)).BeginInit();
             this.SuspendLayout();
@@ -108,18 +109,18 @@
             this.textBox_matrixSize.Name = "textBox_matrixSize";
             this.textBox_matrixSize.Size = new System.Drawing.Size(74, 20);
             this.textBox_matrixSize.TabIndex = 1;
-            this.textBox_matrixSize.Text = "50";
+            this.textBox_matrixSize.Text = "20";
             // 
             // trackBar_timerTick
             // 
-            this.trackBar_timerTick.Location = new System.Drawing.Point(599, 182);
+            this.trackBar_timerTick.Location = new System.Drawing.Point(600, 211);
             this.trackBar_timerTick.Maximum = 200;
             this.trackBar_timerTick.Minimum = 10;
             this.trackBar_timerTick.Name = "trackBar_timerTick";
             this.trackBar_timerTick.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_timerTick.Size = new System.Drawing.Size(45, 104);
             this.trackBar_timerTick.TabIndex = 7;
-            this.trackBar_timerTick.Value = 200;
+            this.trackBar_timerTick.Value = 10;
             this.trackBar_timerTick.Scroll += new System.EventHandler(this.trackBar_timerTick_Scroll);
             // 
             // button_setHome
@@ -132,12 +133,23 @@
             this.button_setHome.UseVisualStyleBackColor = true;
             this.button_setHome.Click += new System.EventHandler(this.button_setHome_Click);
             // 
+            // button_colorMode
+            // 
+            this.button_colorMode.Location = new System.Drawing.Point(570, 182);
+            this.button_colorMode.Name = "button_colorMode";
+            this.button_colorMode.Size = new System.Drawing.Size(75, 23);
+            this.button_colorMode.TabIndex = 9;
+            this.button_colorMode.Text = "color mode";
+            this.button_colorMode.UseVisualStyleBackColor = true;
+            this.button_colorMode.Click += new System.EventHandler(this.button_colorMode_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(652, 573);
+            this.Controls.Add(this.button_colorMode);
             this.Controls.Add(this.button_setHome);
             this.Controls.Add(this.trackBar_timerTick);
             this.Controls.Add(this.textBox_matrixSize);
@@ -171,6 +183,7 @@
         private System.Windows.Forms.TextBox textBox_matrixSize;
         private System.Windows.Forms.TrackBar trackBar_timerTick;
         private System.Windows.Forms.Button button_setHome;
+        private System.Windows.Forms.Button button_colorMode;
     }
 }
 
