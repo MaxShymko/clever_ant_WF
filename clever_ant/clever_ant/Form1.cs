@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
+using System.IO;
 
 namespace clever_ant
 {
@@ -33,17 +34,25 @@ namespace clever_ant
 
         bool setHome = false;
 
-        private void button_load_Click(object sender, EventArgs e)
+        string file_name = "results.txt";
+        int[,] file = null;
+        bool fileOn = false;
+        int file_counter = 1;
+
+        private void button_load_Click(object sender = null, EventArgs e = null)
         {
-            try
+            if (!fileOn)
             {
-                MATRIX_SIZE = Convert.ToInt32(textBox_matrixSize.Text);
-            }
-            catch
-            {
-                loaded = false;
-                ErrorMsg("Неверная размерность матрицы");
-                return;
+                try
+                {
+                    MATRIX_SIZE = Convert.ToInt32(textBox_matrixSize.Text);
+                }
+                catch
+                {
+                    loaded = false;
+                    ErrorMsg("Неверная размерность матрицы");
+                    return;
+                }
             }
             if (MATRIX_SIZE > 99 || MATRIX_SIZE < 5)
             {
@@ -68,18 +77,20 @@ namespace clever_ant
                 }
             }));
 
-            pheromone = new int[MATRIX_SIZE + 2, MATRIX_SIZE + 2];
-            eat = new bool[MATRIX_SIZE, MATRIX_SIZE];
-
-            for (int i = 0; i < MATRIX_SIZE + 2; i++)
-                for (int j = 0; j < MATRIX_SIZE + 2; j++)
-                {
-                    if (i == 0 || i == MATRIX_SIZE + 2 - 1 || j == 0 || j == MATRIX_SIZE + 2 - 1)
-                        pheromone[i, j] = -1;
-                    else
-                        pheromone[i, j] = 0;
-                }
-
+            if (!fileOn)
+            {
+                pheromone = new int[MATRIX_SIZE + 2, MATRIX_SIZE + 2];
+                eat = new bool[MATRIX_SIZE, MATRIX_SIZE];
+            
+                for (int i = 0; i < MATRIX_SIZE + 2; i++)
+                    for (int j = 0; j < MATRIX_SIZE + 2; j++)
+                    {
+                        if (i == 0 || i == MATRIX_SIZE + 2 - 1 || j == 0 || j == MATRIX_SIZE + 2 - 1)
+                            pheromone[i, j] = -1;
+                        else
+                            pheromone[i, j] = 0;
+                    }
+            }
             for (int i = 0; i < MATRIX_SIZE + 2; i++)
             {
                 for (int j = 0; j < MATRIX_SIZE + 2; j++)
@@ -92,6 +103,12 @@ namespace clever_ant
                             {
                                 g.DrawRectangle(frame_line, one_cell * i, one_cell * j, one_cell, one_cell);
 
+                                if (fileOn && i > 0 && j > 0 && i <= MATRIX_SIZE && j <= MATRIX_SIZE)
+                                {
+                                    loaded = true;
+                                    updateEat(i, j, eat[i - 1, j - 1]);
+                                }
+
                                 if (i == 0 || i == MATRIX_SIZE + 2 - 1 || j == 0 || j == MATRIX_SIZE + 2 - 1)
                                     g.DrawString("-1", new Font("Arial", one_cell / 3), Brushes.Red, one_cell * j + one_cell / 5, one_cell * i + one_cell / 5);
                             }
@@ -102,14 +119,21 @@ namespace clever_ant
                 }
             }
 
-            ant[0] = 1; ant[1] = 1;
-
+            if (fileOn)
+            {
+                ant[0] = startX;
+                ant[1] = startY;
+            }
+            else
+            {
+                ant[0] = 1; ant[1] = 1;
+                startX = startY = 1;
+            }
             eatCount = 0;
             label_eatCount.Text = "0";
 
             goHome = false;
-
-            startX = startY = 1;
+            
             updateAnt(startX, startY);
 
             loaded = true;
@@ -120,13 +144,59 @@ namespace clever_ant
             InitializeComponent();
 
             timer.Elapsed += Timer_Elapsed;
-            
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt";
+            openFileDialog1.FileName = "";
         }
 
         private void button_nextStep_Click(object sender = null, EventArgs e = null)
         {
             if (!loaded)
                 return;
+
+            if (fileOn)
+            {
+                if (file_counter == file.Length/2)
+                {
+                    if (timerOn)
+                    {
+                        button_timer_Click();
+                    }
+                    button_file_Click();
+                    MessageBox.Show("Конец файла");
+                    return;
+                }
+                if (file[file_counter - 1, 0] == file[file_counter, 0] && file[file_counter - 1, 1] == file[file_counter, 1])
+                {
+                    if (!goHome)
+                    {
+                        goHome = true;
+                        updateEat(ant[0], ant[1], false);
+                        updateAnt(file[file_counter, 0], file[file_counter, 1]);
+                        file_counter++;
+                        return;
+                    }
+                    else
+                    {
+                        goHome = false;
+                        updateAnt(file[file_counter, 0], file[file_counter, 1]);
+                        file_counter++;
+                        return;
+                    }
+                }
+                if (!goHome)
+                    pheromone[ant[0], ant[1]] += 2;
+                else
+                {
+                    if (pheromone[ant[0], ant[1]] > 0)
+                        pheromone[ant[0], ant[1]] -= 1;
+                }
+
+                setPheromone(ant[0], ant[1], pheromone[ant[0], ant[1]]);
+                updateAnt(file[file_counter, 0], file[file_counter, 1]);
+
+                file_counter++;
+                return;
+            }
 
             if (goHome && ant[0] == startX && ant[1] == startY) //На поиски еды
             {
@@ -174,6 +244,22 @@ namespace clever_ant
         {
             if (i <= 0 || j <= 0 || i >= MATRIX_SIZE + 2 - 1 || j >= MATRIX_SIZE + 2 - 1)
                 return;
+
+            if(fileOn)
+            {
+                main_pictureBox.Invoke(new Action(() =>
+                {
+                    using (Graphics g = Graphics.FromHwnd(main_pictureBox.Handle))
+                    {
+                        g.FillRectangle(Brushes.White, one_cell * ant[1] + 1, one_cell * ant[0] + 1, one_cell - 1, one_cell - 1);
+                        g.FillRectangle(goHome ? Brushes.RoyalBlue : Brushes.Gold, one_cell * j + 1, one_cell * i + 1, one_cell - 1, one_cell - 1);
+                    }
+                }));
+                setPheromone(ant[0], ant[1], pheromone[ant[0], ant[1]]);
+                setPheromone(i, j, pheromone[i, j]);
+                ant[0] = i; ant[1] = j;
+                return;
+            }
 
             updateEat(ant[0], ant[1], eat[ant[0] - 1, ant[1] - 1]);
 
@@ -275,7 +361,7 @@ namespace clever_ant
 
         private void button_randEat_Click(object sender, EventArgs e)
         {
-            if (!loaded || timerOn)
+            if (!loaded || timerOn || fileOn)
                 return;
             
             Random random = new Random(DateTime.Now.Millisecond);
@@ -309,8 +395,11 @@ namespace clever_ant
             }
             else
             {
+                button_timer.Invoke(new Action(() =>
+                {
+                    button_timer.Text = "timer on";
+                }));
                 timer.Stop();
-                button_timer.Text = "timer on";
             }
             timerOn = !timerOn;
         }
@@ -322,6 +411,9 @@ namespace clever_ant
 
         private void button_setHome_Click(object sender, EventArgs e)
         {
+            if (fileOn)
+                return;
+
             setHome = !setHome;
         }
 
@@ -362,6 +454,75 @@ namespace clever_ant
             }));
         }
 
+        private void button_file_Click(object sender = null, EventArgs e = null)
+        {
+            if (timerOn)
+                return;
+            if (!fileOn)
+            {
+                if (openFileDialog1.ShowDialog() != DialogResult.OK)
+                    return;
+                file_name = openFileDialog1.FileName;
+
+                if (!File.Exists(file_name))
+                {
+                    ErrorMsg("Файл не существует!");
+                    return;
+                }
+                string[] t_file = File.ReadAllLines(file_name);
+                if(t_file.Length < 3)
+                {
+                    ErrorMsg("Файл содержит некорректные данные!");
+                    return;
+                }
+                String[] t_eat = t_file[0].Split(' ');
+                MATRIX_SIZE = Convert.ToInt32(Math.Sqrt(t_eat.Length));
+                eat = new bool[MATRIX_SIZE, MATRIX_SIZE];
+                for (int i = 0; i < MATRIX_SIZE; i++)
+                {
+                    for (int j = 0; j < MATRIX_SIZE; j++)
+                    {
+                        eat[i, j] = (t_eat[i * MATRIX_SIZE + j] == "1") ? true : false;
+                    }
+                }
+
+                String[] t_pheromone = t_file[1].Split(' ');
+                pheromone = new int[MATRIX_SIZE + 2, MATRIX_SIZE + 2];
+                for (int i = 0; i < MATRIX_SIZE + 2; i++)
+                {
+                    for (int j = 0; j < MATRIX_SIZE + 2; j++)
+                    {
+                        pheromone[i, j] = Convert.ToInt32(t_pheromone[i * (MATRIX_SIZE + 2) + j]);
+                    }
+                }
+
+                file = new int[t_file.Length - 2, 2];
+                for(int i = 0; i < t_file.Length - 2; i++)
+                {
+                    string[] pos = t_file[i + 2].Split(' ');
+                    file[i, 0] = Convert.ToInt32(pos[0]);
+                    file[i, 1] = Convert.ToInt32(pos[1]);
+                }
+                startX = file[0, 0];
+                startY = file[0, 1];
+
+                fileOn = true;
+                file_counter = 1;
+                button_file.Text = "file off";
+                button_load_Click();
+            }
+            else
+            {
+                loaded = false;
+                fileOn = false;
+                file = null;
+                button_file.Invoke(new Action(() =>
+                {
+                    button_file.Text = "file on";
+                }));
+            }
+        }
+
         private void trackBar_timerTick_Scroll(object sender, EventArgs e)
         {
             System.Windows.Forms.TrackBar myTB;
@@ -371,7 +532,7 @@ namespace clever_ant
 
         private void main_pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (timerOn)
+            if (timerOn || fileOn)
                 return;
 
             int i, j;

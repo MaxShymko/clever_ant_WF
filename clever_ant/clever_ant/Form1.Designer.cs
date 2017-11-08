@@ -38,6 +38,8 @@
             this.trackBar_timerTick = new System.Windows.Forms.TrackBar();
             this.button_setHome = new System.Windows.Forms.Button();
             this.button_colorMode = new System.Windows.Forms.Button();
+            this.button_file = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.main_pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_timerTick)).BeginInit();
             this.SuspendLayout();
@@ -113,7 +115,7 @@
             // 
             // trackBar_timerTick
             // 
-            this.trackBar_timerTick.Location = new System.Drawing.Point(600, 211);
+            this.trackBar_timerTick.Location = new System.Drawing.Point(600, 240);
             this.trackBar_timerTick.Maximum = 200;
             this.trackBar_timerTick.Minimum = 10;
             this.trackBar_timerTick.Name = "trackBar_timerTick";
@@ -143,12 +145,27 @@
             this.button_colorMode.UseVisualStyleBackColor = true;
             this.button_colorMode.Click += new System.EventHandler(this.button_colorMode_Click);
             // 
+            // button_file
+            // 
+            this.button_file.Location = new System.Drawing.Point(570, 211);
+            this.button_file.Name = "button_file";
+            this.button_file.Size = new System.Drawing.Size(75, 23);
+            this.button_file.TabIndex = 10;
+            this.button_file.Text = "file on";
+            this.button_file.UseVisualStyleBackColor = true;
+            this.button_file.Click += new System.EventHandler(this.button_file_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(652, 573);
+            this.Controls.Add(this.button_file);
             this.Controls.Add(this.button_colorMode);
             this.Controls.Add(this.button_setHome);
             this.Controls.Add(this.trackBar_timerTick);
@@ -184,6 +201,8 @@
         private System.Windows.Forms.TrackBar trackBar_timerTick;
         private System.Windows.Forms.Button button_setHome;
         private System.Windows.Forms.Button button_colorMode;
+        private System.Windows.Forms.Button button_file;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 

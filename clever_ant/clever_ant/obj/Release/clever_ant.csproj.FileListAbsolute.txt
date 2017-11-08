@@ -7,3 +7,12 @@ D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.csproj
 D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.exe
 D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.pdb
 D:\VisualStudio2017\Projects\clever_ant\clever_ant\obj\Release\clever_ant.csprojResolveAssemblyReference.cache
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\bin\Release\clever_ant.exe.config
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\bin\Release\clever_ant.exe
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\bin\Release\clever_ant.pdb
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.csprojResolveAssemblyReference.cache
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.Form1.resources
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.Properties.Resources.resources
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.csproj.GenerateResource.Cache
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.exe
+D:\GitHub\clever_ant_WF\clever_ant\clever_ant\obj\Release\clever_ant.pdb
